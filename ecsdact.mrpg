@@ -1,0 +1,86 @@
+/*
+ * PLIST Definition (mrpg see it as a file with 1 record name PVAR)
+ */
+
+if (PACTCODE = 'CRT ') {
+    
+    if (PEMAPPCODE = '20' || PEMAPPCODE = '26'){
+
+        //find its cif
+        PVAR = PVAR[$PEMAPPCODE, $PEMKEY] * CUP009
+
+        //ptemp exist if its cif found in ECSDPF
+        //update pemop1 according to cif's flavorite
+        PTEMP = PVAR[90, $CUX1CS] / ECSDPF 
+                    * ($PEMOP1 = $EMOP1) 
+
+        //update pvar 
+        PVAR = PVAR & PTEMP 
+
+        //Update master file and write log
+        ECSDPF += PVAR 
+        ECSDLOG += PVAR * ($ELACTDATE = WKDATE) 
+                    * ($ELACTION = 'CREATE ACCOUNT') 
+                    * ($ELACTTIME = TIME)
+
+    }
+    
+    if (PEMAPPCODE = '90'){
+
+        // Update master file and write log
+        ECSDPF += PVAR
+        ECSDLOG += PVAR * ($ELACTDATE = WKDATE) 
+                    * ($ELACTION = 'CREATE ACCOUNT') 
+                    * ($ELACTTIME = TIME)
+
+        // PTEMP is subset of ECSDPF that update its emop1 
+        // according to cif's flavorite
+        PTEMP = ECSDPF / (CUP009 / PVAR) 
+                    * ($EMOP1 = PEMOP1)  
+
+        //install the subset's update to ecsdpf
+        ECSDPF = ECSDAP & PTEMP 
+
+        //Write log for cor-update
+        ECSDLOG += PTEMP * ($ELACTDATE = WKDATE) 
+                    * ($ELACTION = 'ACCOUNT COR-UPDATE') 
+                    * ($ELACTTIME = TIME)
+
+    }
+    
+}
+
+if (PACTCODE = 'UPD ') {
+
+    // Perfrom update
+    ECSDPF &= PVAR
+    ECSDLOG += PVAR * ($ELACTDATE = WKDATE) 
+                * ($ELACTION = 'UPDATE') 
+                * ($ELACTTIME = TIME)
+
+    // PTEMP is subset of ECSDPF that update its emop1 
+    // according to cif's flavorite
+    PTEMP = ECSDPF / (CUP009 / PVAR) 
+                * ($EMOP1 = PEMOP1)  
+
+    //install the subset's update to ecsdpf
+    ECSDPF = ECSDAP & PTEMP 
+
+    //Write log for cor-update
+    ECSDLOG += PTEMP * ($ELACTDATE = WKDATE) 
+                * ($ELACTION = 'ACCOUNT COR-UPDATE') 
+                * ($ELACTTIME = TIME)
+
+}
+
+if (PACTCODE = 'INQ ') {
+    PVAR &= ECSDPF
+    ECSDLOG += 0  //No need to add log
+}
+
+if (PACTCODE = 'DLT ') {
+    ECSDPF -= PVAR
+    ECSDLOG += PVAR * ($ELACTDATE = WKDATE) 
+                * ($ELACTION = 'DELETE RECORD') 
+                * ($ELACTTIME = TIME)
+}
