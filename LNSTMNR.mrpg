@@ -1,0 +1,13 @@
+// Prepare variable NPD 
+LNSTPF *= LNP003
+LNSTPF *= ($LNBLDT <> 0 ? $NPD = $LNBLDT : $NPD = $LNSCDT)
+
+// Update flags
+LNSTPF &= LNSTPF / (%SUBDT($NPD:*MONTHS)<>%SUBDT($TODAY:*MONTHS)) 
+            * ($LNSTFPSTF == 'P' ? $LNSTFPSTF = 'X')
+            * ($LNSTFPSTGL == 'P' ? $LNSTFPSTGL = 'X')
+            * ($LNSTFSMS == 'P' ? $LNSTFSMS = 'X')
+LNSTPF &= LNSTPF / ($NPD = $TODAY)
+            * ($LNSTFPSTF == 'P' ? $LNSTFPSTF = 'X')
+            * ($LNSTFPSTGL == 'P' ? $LNSTFPSTGL = 'X')
+            * ($LNSTFSMS == 'P' ? $LNSTFSMS = 'X')
