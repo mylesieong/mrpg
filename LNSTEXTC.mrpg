@@ -1,0 +1,25 @@
+// Build temp file that should review 
+ValidTarget = LNP00301 / LNSTPARM / ($LNSTAT = '') 
+ReviewNewee = ValidTarget 
+                 / (%SUBDT($FVARDTE:*MONTHS)=%SUBDT($FTLDTE:*MONTHS)) 
+                 / (%SUBDT($FVARDTE:*YEARS)=%SUBDT($FTLDTE:*YEARS))
+ReviewOldee = (ValidTarget - ReviewNewee) 
+                 / (%SUBDT(FVARDTE:*DAYS)=%SUBDT(FTLDTE:*DAYS))
+                 / xxxxxx
+
+// Add records into LNSTPF
+LNSTPF += ReviewNewee
+            * ($LNSTFFR = 'Y')
+            * ($LNSTFAPV = ' ')
+            * ($LNSTFCHG = ' ')
+            * ($LNSTFPSTF = ' ')
+            * ($LNSTFPSTGL = ' ')
+            * ($LNSTFSMS = ' ')
+
+LNSTPF += ReviewOldee
+            * ($LNSTFFR = 'N')
+            * ($LNSTFAPV = ' ')
+            * ($LNSTFCHG = ' ')
+            * ($LNSTFPSTF = ' ')
+            * ($LNSTFPSTGL = ' ')
+            * ($LNSTFSMS = ' ')
