@@ -19,8 +19,13 @@ Language wrapper mrpg is designed with these features:
 1. Auto generate the file declaration
 1. Implicit file field matching in FILE = FILE statement
 1. Use key of file to joint, delete and update
+1. Let user explicit define key on a file dynamically with []
 
-## Case 1: Update a field in file
+## Showcases
+
+Below present 4 cases that  demostrate the syntax od mrpg. For more case, please see other sample files in this repo.
+
+### Case 1: Update a field in file
 
 * RPGLE code that iterate PFA and update its field FA001 to 'A' if FA002 is 'B'
     ```
@@ -39,7 +44,7 @@ Language wrapper mrpg is designed with these features:
     PFA *= ($FA002 == 'B' ? $FA001 = 'A1' : $FA001 = 'A2')
     ```
 
-## Case 2: Clear file
+### Case 2: Clear file
 
 * RPGLE code that clear PFB 
     ```
@@ -57,7 +62,7 @@ Language wrapper mrpg is designed with these features:
     PFA = 0
     ```
 
-## Case 3: Iterates PFA to add new record to PFB if field FA001 <> ""
+### Case 3: Iterates PFA to add new record to PFB if field FA001 <> ""
 
 * RPGLE code 
     ```
@@ -84,7 +89,7 @@ Language wrapper mrpg is designed with these features:
     PFB += PFA / ($FA001 <> "") * ($FB005 = FB003 * FB004)
     ```
 
-## Case 4: A refactor of program CQRXEXT (ref: tia.git) using MRPG
+### Case 4: A refactor of program CQRXEXT (ref: tia.git) using MRPG
 
     ```
     //Skip PLIST Declaration
@@ -113,4 +118,3 @@ Language wrapper mrpg is designed with these features:
     CQRXPF += VNQ_U
 
     ```
-
