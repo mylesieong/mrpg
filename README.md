@@ -23,7 +23,7 @@ Language wrapper mrpg is designed with these features:
 
 ## Showcases
 
-Below present 4 cases that  demostrate the syntax od mrpg. For more case, please see other sample files in this repo.
+Below present 3 cases that  demostrate the syntax od mrpg. For more case, please see other sample files in this repo.
 
 ### Case 1: Update a field in file
 
@@ -87,34 +87,4 @@ Below present 4 cases that  demostrate the syntax od mrpg. For more case, please
 * MRPG code that do the same thing
     ```
     PFB += PFA / ($FA001 <> "") * ($FB005 = FB003 * FB004)
-    ```
-
-### Case 4: A refactor of program CQRXEXT (ref: tia.git) using MRPG
-
-    ```
-    //Skip PLIST Declaration
-    CQRXPF -= CQRXPF / ($CXTLTBRN = PBRN)
-
-    //Parse BT description and mark CHQ in new field $TYPE
-    CQRXSYSwTYPE = CQRXSYS * ($MK1 = %SCAN('-':CXSTLTAL1)) 
-                    * ($MK2 = %SCAN('#Q':CXSTLTAL1)) 
-                    * ($OBNKC = %SUBST(CXSTLTAL1:1:MK1-1))
-                    * ($MK2 == 0 ? $TYPE = '   ' : $TYPE = 'CHQ')
-                    * ($TYPE = '   ' ? $CHQ = %SUBST(CXSTLTAL1:MK1 + 1))
-                    * ($TYPE = 'CHQ' ? $CHQ = %SUBST(CXSTLTAL1:MK1 + 1:MK2 - MK1 - 1))
-
-    //QR Cheque part
-    VQ = CQRXSYSwTYPE / ($TYPE = 'CHQ')
-    VQ_M = (VQ * CQRXCHQ) * ($CXSTS = 'M')
-    VQ_U = (VQ - VQ_M) * ($CXSTS = 'U')
-    CQRXPF += VQ_M
-    CQRXPF += VQ_U
-
-    //NQ Cheque part
-    VNQ = CQRXSYSwTYPE / ($TYPE = '   ')
-    VNQ_U = (VNQ * CQRXCHQ) * ($CXSTS = 'U')
-    VNQ_M = (VQ - VQ_U) * ($CXSTS = 'M')
-    CQRXPF += VNQ_M
-    CQRXPF += VNQ_U
-
     ```

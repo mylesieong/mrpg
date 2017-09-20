@@ -1,0 +1,29 @@
+// Update LNSTLSACC
+VTEMP = LNSTTRAN * LNSTLSACC
+LNSTLSACC &= LNSTLSACC / ($LLSRACC <> 0) 
+                * ($LLSTSNQTY = count(VTEMP * ($LTRACC = $LLSRACC) 
+                                            * ($LTREFFDATE >= $LLSRWSTR)                
+                                            * ($LTREFFDATE <= $LLSRWEND))) 
+                * ($LLSTSNAMT = sum(VTEMP * ($LTRACC = $LLSRACC) 
+                                          * ($LTREFFDATE >= $LLSRWSTR)                
+                                          * ($LTREFFDATE <= $LLSRWEND))) 
+
+// Update LNSTPF
+VTEMP = LNSTLSACC * LNSTPF
+LNSTPF &= LNSTPF / ($LNSTFAPV = ' ') 
+            * ($LNSTTSNQTY = count(VTEMP * ($LLSRACC = $LNSTLNNOTE))) 
+            * ($LNSTTSNAMT = sum(VTEMP * ($LLSRACC = $LNSTLNNOTE))) 
+LNSTPF &= LNSTPF / ($LNSTTSNQTY < MINSTD) 
+            * ($LNSTFAPV='A') 
+            * ($LNSTFCHG='Y') 
+            * ($LNSTPNT=PNT) 
+            * ($LNSTFPSTF='P') 
+            * ($LNSTFPSTGL='P') 
+            * ($LNSTFSMS='P') 
+LNSTPF &= LNSTPF / ($LNSTTSNQTY >= MINSTD) 
+            * ($LNSTFAPV='A') 
+            * ($LNSTFCHG='N') 
+            * ($LNSTPNT=0) 
+            * ($LNSTFPSTF='N') 
+            * ($LNSTFPSTGL='N') 
+            * ($LNSTFSMS='N') 
