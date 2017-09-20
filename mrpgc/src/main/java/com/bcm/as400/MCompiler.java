@@ -1,11 +1,17 @@
 package com.bcm.as400;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
 /**
  *
  */
 public class MCompiler {
 
     final String OPERATOR_EQ = "=";
+    final String OPERATOR_ADD = "+";
     final int FILE_INQUIRY = 0;
     final int FILE_UPDATE_ONLY = 1;
     final int FILE_UPDATE_N_ADD = 2;
@@ -20,25 +26,28 @@ public class MCompiler {
 
     String statement;
     String assignee;
-    String assignor;
+    List<String> assignors;
  
     public MCompiler(String s)throws Exception{
         statement = s;
         assignee = getAssignee(statement);
-        assignor = getAssignor(statement);
+        assignors = getAssignors(statement);
     }
 
     public String compile() {
         String output = "";
         output += getFileDeclaration(assignee, FILE_UPDATE_N_ADD);
         output += "\n";
-        output += getFileDeclaration(assignor, FILE_INQUIRY);
-        output += "\n";
+        for (String a: assignors){
+            output += getFileDeclaration(a, FILE_INQUIRY);
+            output += "\n";
+        }
         output += getClearFile(assignee);
         output += "\n";
-        output += getAssignFile(assignee, assignor);
-        output += "\n";
-        echo(output);
+        for (String a: assignors){
+            output += getAssignFile(assignee, a);
+            output += "\n";
+        }
         return output;
     }
 
@@ -86,8 +95,14 @@ public class MCompiler {
         return r;
     }
 
-    public String getAssignor(String s)throws Exception{
-        String r = s.split(OPERATOR_EQ)[1];
+    public List<String> getAssignors(String s)throws Exception{
+        String body = s.split(OPERATOR_EQ)[1];
+        List<String> r = new ArrayList<String>();
+        if (body.indexOf(OPERATOR_ADD) == -1){
+            r.add(body);
+        }else{
+            r = Arrays.asList(body.split(Pattern.quote(OPERATOR_ADD)));
+        }
         return r;
     }
 
