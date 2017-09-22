@@ -120,10 +120,15 @@ public class MCompiler {
         r += "\n";
         r += String.format(CD_EVAL_LAMBDA_FORMAT, lambda);
         r += "\n";
-        r += String.format(CD_EVAL_FORMAT, assignee, assignor);
-        r += "\n";
-        r += String.format(CD_WRITE_FORMAT, assignee);
-        r += "\n";
+        if (assignor.compareTo(assignee) == 0){
+            r += String.format(CD_UPDATE_FORMAT, assignee);
+            r += "\n";
+        }else{
+            r += String.format(CD_EVAL_FORMAT, assignee, assignor);
+            r += "\n";
+            r += String.format(CD_WRITE_FORMAT, assignee);
+            r += "\n";
+        }
         r += String.format(CD_READ_FORMAT, assignor);
         r += "\n";
         r += String.format(CD_ENDDO_FORMAT);

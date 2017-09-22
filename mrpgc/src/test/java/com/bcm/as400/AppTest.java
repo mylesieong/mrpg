@@ -182,6 +182,33 @@ public class AppTest extends TestCase{
         expectOutput += "C ENDDO";
         expectOutput += "\n";
 
+        String output = c.compile();
+        assertTrue(expectOutput.compareTo(output) == 0);
+    }
+
+    /**
+     * Case 5:PFA = PFA * ( FA001 = P )
+     */
+    public void testCase5()throws Exception{
+        String input = "PFA=PFA*(FA001=P)";
+        MCompiler c = new MCompiler(input);
+        String expectOutput = "";
+
+        expectOutput += "FPFA UF A E K DISK";
+        expectOutput += "\n";
+        expectOutput += "C READ PFA";
+        expectOutput += "\n";
+        expectOutput += "C DOW NOT %EOF(PFA)";
+        expectOutput += "\n";
+        expectOutput += "C EVAL FA001=P";
+        expectOutput += "\n";
+        expectOutput += "C UPDATE PFA";
+        expectOutput += "\n";
+        expectOutput += "C READ PFA";
+        expectOutput += "\n";
+        expectOutput += "C ENDDO";
+        expectOutput += "\n";
+
         System.out.println("###expect outcome-case###");
         System.out.println(expectOutput);
         String output = c.compile();
@@ -189,4 +216,5 @@ public class AppTest extends TestCase{
         System.out.println(output);
         assertTrue(expectOutput.compareTo(output) == 0);
     }
+
 }
