@@ -32,6 +32,7 @@ public class AppTest extends TestCase{
         String input = "PFA=PFB";
         MCompiler c = new MCompiler(input);
         String expectOutput = ""; 
+
         expectOutput += "FPFA UF A E K DISK";
         expectOutput += "\n";
         expectOutput += "FPFB IF   E K DISK";
@@ -59,11 +60,7 @@ public class AppTest extends TestCase{
         expectOutput += "C ENDDO";
         expectOutput += "\n";
 
-        System.out.println("###expect outcome-case1###");
-        System.out.println(expectOutput);
         String output = c.compile();
-        System.out.println("###actual outcome-case1###");
-        System.out.println(output);
         assertTrue(expectOutput.compareTo(output) == 0);
     }
 
@@ -115,11 +112,7 @@ public class AppTest extends TestCase{
         expectOutput += "C ENDDO";
         expectOutput += "\n";
 
-        System.out.println("###expect outcome-case2###");
-        System.out.println(expectOutput);
         String output = c.compile();
-        System.out.println("###actual outcome-case2###");
-        System.out.println(output);
         assertTrue(expectOutput.compareTo(output) == 0);
     }
 
@@ -148,12 +141,52 @@ public class AppTest extends TestCase{
         expectOutput += "C ENDDO";
         expectOutput += "\n";
 
-        System.out.println("###expect outcome-case3###");
-        System.out.println(expectOutput);
         String output = c.compile();
-        System.out.println("###actual outcome-case3###");
-        System.out.println(output);
         assertTrue(expectOutput.compareTo(output) == 0);
     }
 
+    /**
+     * Case 4:PFA = PFB * ( FB001 = P )
+     */
+    public void testCase4()throws Exception{
+        String input = "PFA=PFB*(FB001=P)";
+        MCompiler c = new MCompiler(input);
+        String expectOutput = "";
+
+        expectOutput += "FPFA UF A E K DISK";
+        expectOutput += "\n";
+        expectOutput += "FPFB IF   E K DISK";
+        expectOutput += "\n";
+        expectOutput += "C READ PFA";
+        expectOutput += "\n";
+        expectOutput += "C DOW NOT %EOF(PFA)";
+        expectOutput += "\n";
+        expectOutput += "C DELETE PFA";
+        expectOutput += "\n";
+        expectOutput += "C READ PFA";
+        expectOutput += "\n";
+        expectOutput += "C ENDDO";
+        expectOutput += "\n";
+        expectOutput += "C READ PFB";
+        expectOutput += "\n";
+        expectOutput += "C DOW NOT %EOF(PFB)";
+        expectOutput += "\n";
+        expectOutput += "C EVAL FB001=P";
+        expectOutput += "\n";
+        expectOutput += "C EVAL PFA = PFB";
+        expectOutput += "\n";
+        expectOutput += "C WRITE PFA";
+        expectOutput += "\n";
+        expectOutput += "C READ PFB";
+        expectOutput += "\n";
+        expectOutput += "C ENDDO";
+        expectOutput += "\n";
+
+        System.out.println("###expect outcome-case###");
+        System.out.println(expectOutput);
+        String output = c.compile();
+        System.out.println("###actual outcome-case###");
+        System.out.println(output);
+        assertTrue(expectOutput.compareTo(output) == 0);
+    }
 }
