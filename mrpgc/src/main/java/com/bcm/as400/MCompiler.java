@@ -36,18 +36,33 @@ public class MCompiler {
 
     public String compile() {
         String output = "";
+
+        // Write file declaration of assignee
         output += getFileDeclaration(assignee, FILE_UPDATE_N_ADD);
         output += "\n";
+        
+        // Write file declaration of assignors
         for (String a: assignors){
-            output += getFileDeclaration(a, FILE_INQUIRY);
+            if (a.compareTo(assignee) != 0){
+                output += getFileDeclaration(a, FILE_INQUIRY);
+                output += "\n";
+            }
+        }
+
+        // Control: clear assignee if not in assignor list
+        if (assignors.indexOf(assignee) == -1){
+            output += getClearFile(assignee);
             output += "\n";
         }
-        output += getClearFile(assignee);
-        output += "\n";
+
+        // Control: loop and assign
         for (String a: assignors){
-            output += getAssignFile(assignee, a);
-            output += "\n";
+            if (a.compareTo(assignee) != 0){
+                output += getAssignFile(assignee, a);
+                output += "\n";
+            }
         }
+
         return output;
     }
 

@@ -132,14 +132,27 @@ public class AppTest extends TestCase{
         String expectOutput = "";
 
         expectOutput += "FPFA UF A E K DISK";
+        expectOutput += "\n";
         expectOutput += "FPFB IF   E K DISK";
+        expectOutput += "\n";
         expectOutput += "C READ PFB";
+        expectOutput += "\n";
         expectOutput += "C DOW NOT %EOF(PFB)";
-        expectOutput += "C EVAL FA001 = FB001";
+        expectOutput += "\n";
+        expectOutput += "C EVAL PFA = PFB";
+        expectOutput += "\n";
         expectOutput += "C WRITE PFA";
+        expectOutput += "\n";
         expectOutput += "C READ PFB";
+        expectOutput += "\n";
         expectOutput += "C ENDDO";
+        expectOutput += "\n";
+
+        System.out.println("###expect outcome-case3###");
+        System.out.println(expectOutput);
         String output = c.compile();
+        System.out.println("###actual outcome-case3###");
+        System.out.println(output);
         assertTrue(expectOutput.compareTo(output) == 0);
     }
 
