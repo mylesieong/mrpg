@@ -4,6 +4,10 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import com.myles.fun.RPG;
+import com.myles.fun.RPG.FileDefinition;
+import com.myles.fun.RPG.ControlDefinition;
+
 /**
  *
  */
@@ -30,8 +34,10 @@ public class RPGTest extends TestCase{
      */
     public void testFileDefinition()throws Exception{
         RPG rpg = new RPG();
-        rpg.addFile("PFA", RPG.FILE_UPDATE_N_ADD);
-        rpg.addFile("PFB", RPG.FILE_INQUIRY);
+        FileDefinition fda = new FileDefinition("PFA", FileDefinition.FILE_UPDATE_N_ADD);
+        FileDefinition fdb = new FileDefinition("PFB", FileDefinition.FILE_INQUIRY);
+        rpg.addFile(fda);
+        rpg.addFile(fdb);
 
         String expect1 = "";
         expect1 += "FPFA UF A E K DISK";
@@ -44,13 +50,24 @@ public class RPGTest extends TestCase{
     }
 
     /**
-     * Test toString Control Definition
+     * Test toString Control Definition: Delete
      */
-    public void testControlDefinition()throws Exception{
+    public void testControlDefinitionDelete()throws Exception{
 
         RPG rpg = new RPG();
-        rpg.addFile("PFA", RPG.FILE_UPDATE_N_ADD);
-        rpg.addControl("PFA", RPG.CONTROL_DELETE);
+
+        FileDefinition fd = new FileDefinition("PFA", FileDefinition.FILE_UPDATE_N_ADD);
+        rpg.addFile(fd);
+
+        ControlDefinition loop = new ControlDefinition();
+        loop.setType(ControlDefinition.CONTROL_LOOP_FILE);
+        loop.setParameter("PFA");
+
+        ControlDefinition delete = new ControlDefinition();
+        delete.setType(ControlDefinition.CONTROL_DELETE);
+        delete.setParameter("PFA");
+        loop.addEmbed(delete);
+        rpg.addControl(loop);
 
         String expect1 = "";
         expect1 += "FPFA UF A E K DISK";
@@ -60,6 +77,51 @@ public class RPGTest extends TestCase{
         expect1 += "C DOW NOT %EOF(PFA)";
         expect1 += "\n";
         expect1 += "C DELETE PFA";
+        expect1 += "\n";
+        expect1 += "C READ PFA";
+        expect1 += "\n";
+        expect1 += "C ENDDO";
+        expect1 += "\n";
+        String output1 = rpg.toString();
+
+        assertTrue(expect1.compareTo(output1) == 0);
+    }
+
+    /**
+     * Test toString Control Definition: Update 
+     */
+    public void testControlDefinitionUpdate()throws Exception{
+
+        RPG rpg = new RPG();
+        FileDefinition fd = new FileDefinition("PFA", FileDefinition.FILE_UPDATE_ONLY);
+        rpg.addFile(fd);
+
+        ControlDefinition loop = new ControlDefinition();
+        loop.setType(ControlDefinition.CONTROL_LOOP_FILE);
+        loop.setParameter("PFA");
+
+        ControlDefinition update = new ControlDefinition();
+        update.setType(ControlDefinition.CONTROL_UPDATE);
+        update.setParameter("PFA");
+
+        ControlDefinition eval = new ControlDefinition();
+        eval.setType(ControlDefinition.CONTROL_EVAL);
+        eval.setParameter("FA001=P");
+
+        loop.addEmbed(eval);
+        loop.addEmbed(update);
+        rpg.addControl(loop);
+
+        String expect1 = "";
+        expect1 += "FPFA UF   E K DISK";
+        expect1 += "\n";
+        expect1 += "C READ PFA";
+        expect1 += "\n";
+        expect1 += "C DOW NOT %EOF(PFA)";
+        expect1 += "\n";
+        expect1 += "C EVAL FA001=P";
+        expect1 += "\n";
+        expect1 += "C UPDATE PFA";
         expect1 += "\n";
         expect1 += "C READ PFA";
         expect1 += "\n";

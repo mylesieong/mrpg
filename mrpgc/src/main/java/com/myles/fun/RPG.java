@@ -8,17 +8,6 @@ import java.util.ArrayList;
  */
 public class RPG{
 
-    /**
-     * File related options
-     */
-    public final static int FILE_INQUIRY = 0;
-    public final static int FILE_UPDATE_N_ADD = 1;
-    public final static int FILE_UPDATE_ONLY = 2;
-
-    /**
-     * Control related options
-     */
-    public final static int CONTROL_DELETE = 0;
 
     private List<FileDefinition> _fds;
     private List<ControlDefinition> _cds;
@@ -28,14 +17,12 @@ public class RPG{
         _cds = new ArrayList<ControlDefinition>();
     }
 
-    public void addFile(String file, int type){
-        //TODO check if file added already, if yes, update
-        _fds.add(new FileDefinition(file, type));
+    public void addFile(FileDefinition fd){
+        _fds.add(fd);
     }
 
-    public void addControl(String file, int type){
-        //TODO is it possible to get update?
-        _cds.add(new ControlDefinition(file, type));
+    public void addControl(ControlDefinition cd){
+        _cds.add(cd);
     }
 
     @Override 
@@ -60,7 +47,14 @@ public class RPG{
     /**
      *
      */
-    class FileDefinition{
+    public static class FileDefinition{
+
+        /**
+         * File related options
+         */
+        public final static int FILE_INQUIRY = 0;
+        public final static int FILE_UPDATE_N_ADD = 1;
+        public final static int FILE_UPDATE_ONLY = 2;
 
         private final static String FD_FORMAT = "F%s %sF %s E K DISK";
 
@@ -94,7 +88,16 @@ public class RPG{
     /**
      *
      */
-    class ControlDefinition{
+    public static class ControlDefinition{
+        /**
+         * Control related options
+         */
+        public final static int CONTROL_LOOP_FILE = 0;
+        public final static int CONTROL_IF = 1;
+        public final static int CONTROL_UPDATE = 2;
+        public final static int CONTROL_WRITE = 3;
+        public final static int CONTROL_DELETE = 4;
+        public final static int CONTROL_EVAL = 5;
 
         private final static String CD_READ_FORMAT = "C READ %s";
         private final static String CD_DOW_PART_A_FORMAT = "C DOW NOT %EOF";
@@ -102,29 +105,61 @@ public class RPG{
         private final static String CD_DELETE_FORMAT = "C DELETE %s";
         private final static String CD_WRITE_FORMAT = "C WRITE %s";
         private final static String CD_UPDATE_FORMAT = "C UPDATE %s";
-        private final static String CD_EVAL_FORMAT = "C EVAL %s = %s";
-        private final static String CD_EVAL_LAMBDA_FORMAT = "C EVAL %s";
+        private final static String CD_EVAL_FORMAT = "C EVAL %s";
         private final static String CD_ENDDO_FORMAT = "C ENDDO";
 
-        private String _file;
+        private String _parameter;
         private int _type;
+        private List<ControlDefinition> _embeds;
 
-        public ControlDefinition(String file, int type){
-            _file = file;
+        public ControlDefinition(){
+            _embeds = new ArrayList<ControlDefinition>();
+        }
+
+        public void setType(int type){
             _type = type;
+        }
+
+        public void setParameter(String p){
+            _parameter = p;
+        }
+
+        public void addEmbed(ControlDefinition cd){
+            _embeds.add(cd);
         }
 
         public List<String> toStrings(){
             List<String> result = new ArrayList<String>();
 
-            if (_type == RPG.CONTROL_DELETE){
-                result.add(String.format(CD_READ_FORMAT, _file));
-                result.add(CD_DOW_PART_A_FORMAT
-                        + String.format(CD_DOW_PART_B_FORMAT, _file));
-                result.add(String.format(CD_DELETE_FORMAT, _file));
-                result.add(String.format(CD_READ_FORMAT, _file));
-                result.add(String.format(CD_ENDDO_FORMAT, _file));
-            }
+            switch (_type){
+                case CONTROL_LOOP_FILE:
+                    result.add(String.format(CD_READ_FORMAT, _parameter));
+                    result.add(CD_DOW_PART_A_FORMAT
+                        + String.format(CD_DOW_PART_B_FORMAT, _parameter));
+                    for (ControlDefinition cd: _embeds){
+                        for (String s: cd.toStrings()){
+                            result.add(s);
+                        }
+                    } 
+                    result.add(String.format(CD_READ_FORMAT, _parameter));
+                    result.add(String.format(CD_ENDDO_FORMAT, _parameter));
+                    break;
+
+                case CONTROL_DELETE:
+                    result.add(String.format(CD_DELETE_FORMAT, _parameter));
+                    break;
+
+                case CONTROL_EVAL:
+                    result.add(String.format(CD_EVAL_FORMAT, _parameter));
+                    break;
+
+                case CONTROL_UPDATE:
+                    result.add(String.format(CD_UPDATE_FORMAT, _parameter));
+                    break;
+
+                default:
+                    break;
+            } 
 
             return result;
         }
