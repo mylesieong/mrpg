@@ -107,6 +107,8 @@ public class RPG{
         private final static String CD_UPDATE_FORMAT = "C UPDATE %s";
         private final static String CD_EVAL_FORMAT = "C EVAL %s";
         private final static String CD_ENDDO_FORMAT = "C ENDDO";
+        private final static String CD_IF_FORMAT = "C IF %s";
+        private final static String CD_ENDIF_FORMAT = "C ENDIF";
 
         private String _parameter;
         private int _type;
@@ -155,6 +157,20 @@ public class RPG{
 
                 case CONTROL_UPDATE:
                     result.add(String.format(CD_UPDATE_FORMAT, _parameter));
+                    break;
+
+                case CONTROL_WRITE:
+                    result.add(String.format(CD_WRITE_FORMAT, _parameter));
+                    break;
+
+                case CONTROL_IF:
+                    result.add(String.format(CD_IF_FORMAT, _parameter));
+                    for (ControlDefinition cd: _embeds){
+                        for (String s: cd.toStrings()){
+                            result.add(s);
+                        }
+                    } 
+                    result.add(String.format(CD_ENDIF_FORMAT));
                     break;
 
                 default:
