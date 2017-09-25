@@ -21,50 +21,78 @@ public class MRPG {
     private Operation _operation;
 
     public MRPG(){ 
-        _assignee = "";
-        _assignor = "";
-        _operation = null;
+        this.setAssignee("");
+        this.setAssignor("");
+        this.setOperation(null);
     }
 
     public MRPG(String s){
-        int indexEQ = s.indexOf(OPERATOR_EQ);
+        int iEQ = s.indexOf(OPERATOR_EQ);
 
-        int indexADD = s.indexOf(OPERATOR_ADD);
-        int indexRED = s.indexOf(OPERATOR_RED);
-        int indexMUL = s.indexOf(OPERATOR_MUL);
-        int indexDIV = s.indexOf(OPERATOR_DIV);
+        int iADD = s.indexOf(OPERATOR_ADD);
+        int iRED = s.indexOf(OPERATOR_RED);
+        int iMUL = s.indexOf(OPERATOR_MUL);
+        int iDIV = s.indexOf(OPERATOR_DIV);
 
-        int index = indexADD!=-1?indexADD:0 
-           + indexRED!=-1?indexRED:0 
-           + indexMUL!=-1?indexMUL:0 
-           + indexDIV!=-1?indexDIV:0;
+        boolean hasNoOperation = iADD==-1&&iRED==-1&&iMUL==-1&&iDIV==-1;
 
-        _assignee = s.substring(0, indexEQ);
+        this.setAssignee(s.substring(0, iEQ));
 
-        if (indexADD == -1 && indexRED == -1 
-                && indexMUL == -1 && indexDIV == -1){
-            _assignor = s.substring(indexEQ + 1);
+        if (hasNoOperation){
+
+            this.setAssignor(s.substring(iEQ + 1));
+            this.setOperation(null);
+
         }else{
-            _assignor = s.substring(indexEQ, index);
+
+            int index = 0;
+            String operator = null;
+            String parameter = null;
+
+            if (iADD != -1){
+                index = iADD;
+                operator = OPERATOR_ADD;
+            }else if (iRED != -1){
+                index = iRED;
+                operator = OPERATOR_RED;
+            }else if (iMUL != -1){
+                index = iMUL;
+                operator = OPERATOR_MUL;
+            }else if (iDIV != -1){
+                index = iDIV;
+                operator = OPERATOR_DIV;
+            }
+
+            parameter = s.substring(index + 1);
+            this.setAssignor(s.substring(iEQ + 1, index));
+            this.setOperation(new Operation(operator, parameter));
+
         } 
 
-        _operation = null; //TODO
     }
 
     public void setAssignor(String s){
         _assignor = s;
     }
 
-    public void setAssignee(String s){
-        _assignee = s;
-    }
-
     public String getAssignor(){
         return _assignor;
     }
 
+    public void setAssignee(String s){
+        _assignee = s;
+    }
+
     public String getAssignee(){
         return _assignee;
+    }
+
+    public void setOperation(Operation o){
+        _operation = o;
+    }
+
+    public Operation getOperation(){
+        return _operation;
     }
 
     @Override 
@@ -73,7 +101,10 @@ public class MRPG {
         sb.append(_assignee);
         sb.append(OPERATOR_EQ);
         sb.append(_assignor);
-        //TODO operation appending
+        if (_operation != null){
+            sb.append(_operation.getOperator());
+            sb.append(_operation.getParameter());
+        }
         return sb.toString();
     }
 
@@ -85,6 +116,31 @@ public class MRPG {
         private String _operator;
         private String _parameter;
 
+        public Operation(){
+            _operator = null;
+            _parameter = null;
+        }
+
+        public Operation(String operator, String parameter){
+            _operator = operator;
+            _parameter = parameter;
+        }
+
+        public void setOperator(String s){
+            _operator = s;
+        }
+
+        public String getOperator(){
+            return _operator;
+        }
+
+        public void setParameter(String s){
+            _parameter = s;
+        }
+
+        public String getParameter(){
+            return _parameter;
+        }
     }
 
 }
