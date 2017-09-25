@@ -7,14 +7,14 @@ import junit.framework.TestSuite;
 /**
  * Unit test for simple App.
  */
-public class AppTest extends TestCase{
+public class MRPGcTest extends TestCase{
 
     /**
      * Create the test case
      *
      * @param testName name of the test case
      */
-    public AppTest( String testName ){
+    public MRPGcTest( String testName ){
         super( testName );
     }
 
@@ -22,7 +22,7 @@ public class AppTest extends TestCase{
      * @return the suite of tests being tested
      */
     public static Test suite(){
-        return new TestSuite( AppTest.class );
+        return new TestSuite( MRPGcTest.class );
     }
 
     /**
@@ -30,7 +30,7 @@ public class AppTest extends TestCase{
      */
     public void testCase1()throws Exception{
         String input = "PFA=PFB";
-        MCompiler c = new MCompiler(input);
+        MRPGc c = new MRPGc(input);
         String expectOutput = ""; 
 
         expectOutput += "FPFA UF A E K DISK";
@@ -69,7 +69,7 @@ public class AppTest extends TestCase{
      */
     public void testCase2()throws Exception{
         String input = "PFA=PFB+PFC";
-        MCompiler c = new MCompiler(input);
+        MRPGc c = new MRPGc(input);
         String expectOutput = "";
         expectOutput += "FPFA UF A E K DISK";
         expectOutput += "\n";
@@ -121,7 +121,7 @@ public class AppTest extends TestCase{
      */
     public void testCase3()throws Exception{
         String input = "PFA=PFA+PFB";
-        MCompiler c = new MCompiler(input);
+        MRPGc c = new MRPGc(input);
         String expectOutput = "";
 
         expectOutput += "FPFA UF A E K DISK";
@@ -150,7 +150,7 @@ public class AppTest extends TestCase{
      */
     public void testCase4()throws Exception{
         String input = "PFA=PFB*(FB001=P)";
-        MCompiler c = new MCompiler(input);
+        MRPGc c = new MRPGc(input);
         String expectOutput = "";
 
         expectOutput += "FPFA UF A E K DISK";
@@ -191,7 +191,7 @@ public class AppTest extends TestCase{
      */
     public void testCase5()throws Exception{
         String input = "PFA=PFA*(FA001=P)";
-        MCompiler c = new MCompiler(input);
+        MRPGc c = new MRPGc(input);
         String expectOutput = "";
 
         expectOutput += "FPFA UF A E K DISK";

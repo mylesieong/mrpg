@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  *
  */
-public class MCompiler {
+public class MRPGc {
 
     final String OPERATOR_EQ = "=";
     final String OPERATOR_ADD = "+";
@@ -36,7 +36,7 @@ public class MCompiler {
     List<String> assignors;
     String lambda;
  
-    public MCompiler(String s)throws Exception{
+    public MRPGc(String s)throws Exception{
         statement = s;
         assignee = getAssignee(statement);
         assignors = getAssignors(statement);
