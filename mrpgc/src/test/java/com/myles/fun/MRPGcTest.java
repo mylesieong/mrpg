@@ -1,4 +1,4 @@
-package com.bcm.as400;
+package com.myles.fun;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
