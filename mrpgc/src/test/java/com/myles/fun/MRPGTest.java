@@ -78,11 +78,6 @@ public class MRPGTest extends TestCase{
         String expect5 = "PFC";
         String output5 = mrpg.getOperation().getParameter();
 
-        echo(output1);
-        echo(output2);
-        echo(output3);
-        echo(output4);
-        echo(output5);
         assertTrue(expect1.compareTo(output1)==0
                 && expect2.compareTo(output2)==0
                 && expect3.compareTo(output3)==0
@@ -91,10 +86,31 @@ public class MRPGTest extends TestCase{
     }
 
     /**
-     * Test toString of PFA=PFA+PFB
+     * Test toString of PFA=PFA*PFB
      */
     public void testAssignOneToTwoIncludeSelfWConstructor()throws Exception{
-        assertTrue(true);
+        MRPG mrpg = new MRPG("PFA=PFA*PFB");
+
+        String expect1 = "PFA=PFA*PFB"; 
+        String output1 = mrpg.toString();
+
+        String expect2 = "PFA";
+        String output2 = mrpg.getAssignee();
+
+        String expect3 = "PFA";
+        String output3 = mrpg.getAssignor();
+
+        String expect4 = "*";
+        String output4 = mrpg.getOperation().getOperator();
+
+        String expect5 = "PFB";
+        String output5 = mrpg.getOperation().getParameter();
+
+        assertTrue(expect1.compareTo(output1)==0
+                && expect2.compareTo(output2)==0
+                && expect3.compareTo(output3)==0
+                && expect4.compareTo(output4)==0
+                && expect5.compareTo(output5)==0);
     }
 
     /**
