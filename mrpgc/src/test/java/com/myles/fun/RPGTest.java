@@ -26,16 +26,44 @@ public class RPGTest extends TestCase{
     }
 
     /**
-     * Test toString
+     * Test toString File Definition
      */
-    public void testAssignOneToOneWSetter()throws Exception{
+    public void testFileDefinition()throws Exception{
         RPG rpg = new RPG();
-        rpg.setFile("PFA", RPG.FILE_UPDATE_N_ADD);
-        rpg.setFile("PFB", RPG.FILE_INQUIRY);
+        rpg.addFile("PFA", RPG.FILE_UPDATE_N_ADD);
+        rpg.addFile("PFB", RPG.FILE_INQUIRY);
+
         String expect1 = "";
         expect1 += "FPFA UF A E K DISK";
         expect1 += "\n";
         expect1 += "FPFB IF   E K DISK";
+        expect1 += "\n";
+        String output1 = rpg.toString();
+
+        assertTrue(expect1.compareTo(output1) == 0);
+    }
+
+    /**
+     * Test toString Control Definition
+     */
+    public void testControlDefinition()throws Exception{
+
+        RPG rpg = new RPG();
+        rpg.addFile("PFA", RPG.FILE_UPDATE_N_ADD);
+        rpg.addControl("PFA", RPG.CONTROL_DELETE);
+
+        String expect1 = "";
+        expect1 += "FPFA UF A E K DISK";
+        expect1 += "\n";
+        expect1 += "C READ PFA";
+        expect1 += "\n";
+        expect1 += "C DOW NOT %EOF(PFA)";
+        expect1 += "\n";
+        expect1 += "C DELETE PFA";
+        expect1 += "\n";
+        expect1 += "C READ PFA";
+        expect1 += "\n";
+        expect1 += "C ENDDO";
         expect1 += "\n";
         String output1 = rpg.toString();
 
