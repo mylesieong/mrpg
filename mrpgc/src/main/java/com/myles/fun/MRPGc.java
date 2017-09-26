@@ -39,25 +39,49 @@ public class MRPGc {
 
         // Inject Controls
         if (mrpg.getOperation()== null){
+
             // This must be a single file assignment
-            ControlDefinition loop = new ControlDefinition();
-            loop.setType(ControlDefinition.CONTROL_LOOP_FILE);
-            loop.setParameter(assignor);
+            String eval = mrpg.getEvalStatement(assignee, assignor);
+            addLoop(rpg, assignee, assignor, eval);
 
-            ControlDefinition eval = new ControlDefinition();
-            eval.setType(ControlDefinition.CONTROL_EVAL);
-            eval.setParameter(mrpg.getEvalStatement(assignee, assignor));
+        }else{
 
-            ControlDefinition write = new ControlDefinition();
-            write.setType(ControlDefinition.CONTROL_WRITE);
-            write.setParameter(assignee);
+            String operator = mrpg.getOperation().getOperator();
 
-            loop.addEmbed(eval);
-            loop.addEmbed(write);
-            rpg.addControl(loop);
+            if (operator.compareTo(MRPG.OPERATOR_ADD) == 0){
+                String secondAssignor = mrpg.getOperation().getParameter();
+                // Parse addition operation file definition
+                FileDefinition secondAssignorFD =
+                    new FileDefinition(secondAssignor, FileDefinition.FILE_INQUIRY);
+                rpg.addFile(secondAssignorFD);
+                
+                // Parse addition operation control definition
+                String eval1 = mrpg.getEvalStatement(assignee, assignor);
+                String eval2 = mrpg.getEvalStatement(assignee, secondAssignor);
+                addLoop(rpg, assignee, assignor, eval1);
+                addLoop(rpg, assignee, secondAssignor, eval2);
+            }
         }
 
         return rpg;
+    }
+
+    private static void addLoop(RPG rpg, String assignee, String assignor, String evalStatement){
+        ControlDefinition loop = new ControlDefinition();
+        loop.setType(ControlDefinition.CONTROL_LOOP_FILE);
+        loop.setParameter(assignor);
+
+        ControlDefinition eval = new ControlDefinition();
+        eval.setType(ControlDefinition.CONTROL_EVAL);
+        eval.setParameter(evalStatement);
+
+        ControlDefinition write = new ControlDefinition();
+        write.setType(ControlDefinition.CONTROL_WRITE);
+        write.setParameter(assignee);
+
+        loop.addEmbed(eval);
+        loop.addEmbed(write);
+        rpg.addControl(loop);
     }
 
     /**
