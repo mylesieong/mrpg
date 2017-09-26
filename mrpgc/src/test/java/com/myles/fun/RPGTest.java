@@ -187,9 +187,6 @@ public class RPGTest extends TestCase{
         expect1 += "\n";
         String output1 = rpg.toString();
 
-        echo(expect1);
-        echo(output1);
-
         assertTrue(expect1.compareTo(output1) == 0);
     }
     /**

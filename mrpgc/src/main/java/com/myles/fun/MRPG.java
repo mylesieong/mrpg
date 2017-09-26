@@ -87,6 +87,12 @@ public class MRPG {
         return _assignee;
     }
 
+    public String getEvalStatement(String a, String b){
+        String fieldA = a + "001";
+        String fieldB = b + "001";
+        return fieldA + "=" + fieldB;
+    }
+
     public void setOperation(Operation o){
         _operation = o;
     }

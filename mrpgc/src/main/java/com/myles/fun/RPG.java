@@ -21,8 +21,16 @@ public class RPG{
         _fds.add(fd);
     }
 
+    public List<FileDefinition> getFileDefinitions(){
+        return _fds;
+    }
+
     public void addControl(ControlDefinition cd){
         _cds.add(cd);
+    }
+    
+    public List<ControlDefinition> getControlDefinitions(){
+        return _cds;
     }
 
     @Override 
@@ -64,6 +72,22 @@ public class RPG{
         public FileDefinition(String file, int type){
             _file = file;
             _type = type;
+        }
+
+        public String getFile(){
+            return _file;
+        }
+
+        public void setFile(String filename){
+            _file = filename;
+        }
+
+        public int getType(){
+            return _type;
+        }
+
+        public void setType(int i){
+            _type = i;
         }
 
         @Override
@@ -118,8 +142,16 @@ public class RPG{
             _embeds = new ArrayList<ControlDefinition>();
         }
 
+        public int getType(){
+            return _type;
+        }
+
         public void setType(int type){
             _type = type;
+        }
+
+        public String getParameter(){
+            return _parameter;
         }
 
         public void setParameter(String p){
@@ -128,6 +160,10 @@ public class RPG{
 
         public void addEmbed(ControlDefinition cd){
             _embeds.add(cd);
+        }
+
+        public List<ControlDefinition> getEmbeds(){
+            return _embeds;
         }
 
         public List<String> toStrings(){
