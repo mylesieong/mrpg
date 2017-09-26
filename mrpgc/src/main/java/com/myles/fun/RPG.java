@@ -18,7 +18,23 @@ public class RPG{
     }
 
     public void addFile(FileDefinition fd){
-        _fds.add(fd);
+
+        FileDefinition exist = null;
+
+        for (FileDefinition e: _fds){
+            if (fd.getFile().compareTo(e.getFile()) == 0){
+                exist = e;
+            }
+        }
+
+        if (exist == null){
+            _fds.add(fd);
+        }else{
+            int newType = fd.getType();
+            int type = exist.getType();
+            exist.setType( newType > type ? newType : type );
+        }
+
     }
 
     public List<FileDefinition> getFileDefinitions(){
@@ -61,8 +77,8 @@ public class RPG{
          * File related options
          */
         public final static int FILE_INQUIRY = 0;
-        public final static int FILE_UPDATE_N_ADD = 1;
-        public final static int FILE_UPDATE_ONLY = 2;
+        public final static int FILE_UPDATE_ONLY = 1;
+        public final static int FILE_UPDATE_N_ADD = 2;
 
         private final static String FD_FORMAT = "F%s %sF %s E K DISK";
 

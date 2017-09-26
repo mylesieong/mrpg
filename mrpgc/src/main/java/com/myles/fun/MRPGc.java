@@ -67,20 +67,37 @@ public class MRPGc {
     }
 
     private static void addLoop(RPG rpg, String assignee, String assignor, String evalStatement){
+        
         ControlDefinition loop = new ControlDefinition();
         loop.setType(ControlDefinition.CONTROL_LOOP_FILE);
         loop.setParameter(assignor);
 
-        ControlDefinition eval = new ControlDefinition();
-        eval.setType(ControlDefinition.CONTROL_EVAL);
-        eval.setParameter(evalStatement);
+        if (assignor.compareTo(assignee) == 0){
+            // It is an update loop
+            ControlDefinition eval = new ControlDefinition();
+            eval.setType(ControlDefinition.CONTROL_EVAL);
+            eval.setParameter(evalStatement);
 
-        ControlDefinition write = new ControlDefinition();
-        write.setType(ControlDefinition.CONTROL_WRITE);
-        write.setParameter(assignee);
+            ControlDefinition update = new ControlDefinition();
+            update.setType(ControlDefinition.CONTROL_UPDATE);
+            update.setParameter(assignee);
 
-        loop.addEmbed(eval);
-        loop.addEmbed(write);
+            loop.addEmbed(eval);
+            loop.addEmbed(update);
+        }else{
+            // It is an write loop
+            ControlDefinition eval = new ControlDefinition();
+            eval.setType(ControlDefinition.CONTROL_EVAL);
+            eval.setParameter(evalStatement);
+
+            ControlDefinition write = new ControlDefinition();
+            write.setType(ControlDefinition.CONTROL_WRITE);
+            write.setParameter(assignee);
+
+            loop.addEmbed(eval);
+            loop.addEmbed(write);
+        }
+
         rpg.addControl(loop);
     }
 

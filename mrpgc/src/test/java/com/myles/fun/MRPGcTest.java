@@ -136,7 +136,55 @@ public class MRPGcTest extends TestCase{
      */
     public void testCase3()throws Exception{
         String input = "PFA=PFA+PFB";
-        assertTrue(true);
+        MRPG mrpg = new MRPG(input);
+        RPG rpg = MRPGc.compile(mrpg);
+
+        // Check file definitions
+        List<FileDefinition> files = rpg.getFileDefinitions();
+        assertTrue(files.size()==2);
+        for (FileDefinition fd: files){
+            String filename = fd.getFile();
+            assertTrue(filename.compareTo("PFA") == 0
+                    || filename.compareTo("PFB") == 0
+                    );
+            if (filename.compareTo("PFA") == 0){
+                assertTrue(fd.getType() == FileDefinition.FILE_UPDATE_N_ADD);
+            }
+            if (filename.compareTo("PFB") == 0){
+                assertTrue(fd.getType() == FileDefinition.FILE_INQUIRY);
+            }
+        }
+
+        // Check loop control definitions
+        List<ControlDefinition> controls = rpg.getControlDefinitions();
+        assertTrue(controls.size()==2);
+        ControlDefinition loop1 = controls.get(0);
+        assertTrue(loop1.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop1.getParameter().compareTo("PFA")==0);
+        ControlDefinition loop2 = controls.get(1);
+        assertTrue(loop2.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop2.getParameter().compareTo("PFB")==0);
+
+        // Check eval & write controls in loop1
+        List<ControlDefinition> inLoopControls = loop1.getEmbeds();
+        assertTrue(inLoopControls.size()==2);
+        ControlDefinition eval = inLoopControls.get(0);
+        assertTrue(eval.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval.getParameter().compareTo("PFA001=PFA001")==0);
+        ControlDefinition update = inLoopControls.get(1);
+        assertTrue(update.getType()==ControlDefinition.CONTROL_UPDATE);
+        assertTrue(update.getParameter().compareTo("PFA")==0);
+
+        // Check eval & write controls in loop2
+        inLoopControls = loop2.getEmbeds();
+        assertTrue(inLoopControls.size()==2);
+        eval = inLoopControls.get(0);
+        assertTrue(eval.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval.getParameter().compareTo("PFA001=PFB001")==0);
+        ControlDefinition write = inLoopControls.get(1);
+        assertTrue(write.getType()==ControlDefinition.CONTROL_WRITE);
+        assertTrue(write.getParameter().compareTo("PFA")==0);
+
     }
 
     /**
