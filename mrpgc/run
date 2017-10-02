@@ -1,1 +1,1 @@
-java -cp target/mrpgc-1.0-SNAPSHOT.jar com.bcm.as400.App
+java -cp target/mrpg-compiler-1.0-SNAPSHOT.jar com.myles.fun.App
