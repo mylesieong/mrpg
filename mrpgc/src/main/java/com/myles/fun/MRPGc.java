@@ -13,11 +13,6 @@ import com.myles.fun.RPG.ControlDefinition;
  */
 public class MRPGc {
 
-    String statement;
-    String assignee;
-    List<String> assignors;
-    String lambda;
-
     private MRPGc(){
         // Declare as an util class
     }
@@ -27,15 +22,21 @@ public class MRPGc {
 
         // Inject assignee
         String assignee = mrpg.getAssignee();
-        FileDefinition fdAssignee =
-            new FileDefinition(assignee, FileDefinition.FILE_UPDATE_N_ADD);
+        FileDefinition fdAssignee = new FileDefinition(assignee, FileDefinition.FILE_UPDATE_N_ADD);
         rpg.addFile(fdAssignee);
 
         // Inject assignor
         String assignor = mrpg.getAssignor();
-        FileDefinition fdAssignor =
-            new FileDefinition(assignor, FileDefinition.FILE_INQUIRY);
+        FileDefinition fdAssignor = new FileDefinition(assignor, FileDefinition.FILE_INQUIRY);
         rpg.addFile(fdAssignor);
+
+        // Check if pf should be clear
+        // TODO
+        /*
+        if (shouldFileBeClear(mrpg, assignee)){
+            addClearLoop(rpg, assignee);
+        }
+        */
 
         // Inject Controls
         if (mrpg.getOperation()== null){
@@ -48,6 +49,7 @@ public class MRPGc {
 
             String operator = mrpg.getOperation().getOperator();
 
+            // Process + Operation
             if (operator.compareTo(MRPG.OPERATOR_ADD) == 0){
                 String secondAssignor = mrpg.getOperation().getParameter();
                 // Parse addition operation file definition
@@ -61,12 +63,38 @@ public class MRPGc {
                 addLoop(rpg, assignee, assignor, eval1);
                 addLoop(rpg, assignee, secondAssignor, eval2);
             }
+
+            // Process * Operation
+            if (operator.compareTo(MRPG.OPERATOR_MUL) == 0){
+
+                List<String> ops = new ArrayList<String>();
+
+                // Set lambda stmt
+                String lambda = mrpg.getOperation().getParameter(); 
+                int bracketOpen = lambda.indexOf("(");
+                int bracketClose = lambda.indexOf(")");
+                lambda = lambda.substring(bracketOpen + 1, bracketClose);
+                ops.add(lambda);
+
+                // Set update/write stmt
+                String eval = mrpg.getEvalStatement(assignee, assignor);
+                ops.add(eval);
+
+                addLoop(rpg, assignee, assignor, ops); 
+            }
+
         }
 
         return rpg;
     }
 
-    private static void addLoop(RPG rpg, String assignee, String assignor, String evalStatement){
+    private static void addLoop(RPG rpg, String assignee, String assignor, String eval){
+        List<String> l = new ArrayList<String>();
+        l.add(eval);
+        addLoop(rpg, assignee, assignor, l);
+    }
+
+    private static void addLoop(RPG rpg, String assignee, String assignor, List<String> evals){
         
         ControlDefinition loop = new ControlDefinition();
         loop.setType(ControlDefinition.CONTROL_LOOP_FILE);
@@ -74,28 +102,32 @@ public class MRPGc {
 
         if (assignor.compareTo(assignee) == 0){
             // It is an update loop
-            ControlDefinition eval = new ControlDefinition();
-            eval.setType(ControlDefinition.CONTROL_EVAL);
-            eval.setParameter(evalStatement);
+            for (String e: evals){
+                ControlDefinition eval = new ControlDefinition();
+                eval.setType(ControlDefinition.CONTROL_EVAL);
+                eval.setParameter(e);
+                loop.addEmbed(eval);
+            }
 
             ControlDefinition update = new ControlDefinition();
             update.setType(ControlDefinition.CONTROL_UPDATE);
             update.setParameter(assignee);
-
-            loop.addEmbed(eval);
             loop.addEmbed(update);
+
         }else{
             // It is an write loop
-            ControlDefinition eval = new ControlDefinition();
-            eval.setType(ControlDefinition.CONTROL_EVAL);
-            eval.setParameter(evalStatement);
+            for (String e: evals){
+                ControlDefinition eval = new ControlDefinition();
+                eval.setType(ControlDefinition.CONTROL_EVAL);
+                eval.setParameter(e);
+                loop.addEmbed(eval);
+            }
 
             ControlDefinition write = new ControlDefinition();
             write.setType(ControlDefinition.CONTROL_WRITE);
             write.setParameter(assignee);
-
-            loop.addEmbed(eval);
             loop.addEmbed(write);
+
         }
 
         rpg.addControl(loop);
