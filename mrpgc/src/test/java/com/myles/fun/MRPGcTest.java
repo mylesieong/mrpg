@@ -55,13 +55,27 @@ public class MRPGcTest extends TestCase{
 
         // Check loop control definitions
         List<ControlDefinition> controls = rpg.getControlDefinitions();
-        assertTrue(controls.size()==1);
-        ControlDefinition loopControl = controls.get(0);
+        assertTrue(controls.size()==2);
+        ControlDefinition loopControl;
+        List<ControlDefinition> inLoopControls;
+
+        // Check loop1: delete file
+        loopControl = controls.get(0);
+        assertTrue(loopControl.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loopControl.getParameter().compareTo("PFA")==0);
+        // Check delete control
+        inLoopControls = loopControl.getEmbeds();
+        assertTrue(inLoopControls.size()==1);
+        ControlDefinition delete = inLoopControls.get(0);
+        assertTrue(delete.getType()==ControlDefinition.CONTROL_DELETE);
+        assertTrue(delete.getParameter().compareTo("PFA")==0);
+
+        // Check loop2: assign file
+        loopControl = controls.get(1);
         assertTrue(loopControl.getType()==ControlDefinition.CONTROL_LOOP_FILE);
         assertTrue(loopControl.getParameter().compareTo("PFB")==0);
-
         // Check eval & write controls 
-        List<ControlDefinition> inLoopControls = loopControl.getEmbeds();
+        inLoopControls = loopControl.getEmbeds();
         assertTrue(inLoopControls.size()==2);
         ControlDefinition evalControl = inLoopControls.get(0);
         assertTrue(evalControl.getType()==ControlDefinition.CONTROL_EVAL);
@@ -102,16 +116,26 @@ public class MRPGcTest extends TestCase{
 
         // Check loop control definitions
         List<ControlDefinition> controls = rpg.getControlDefinitions();
-        assertTrue(controls.size()==2);
+        assertTrue(controls.size()==3);
+        List<ControlDefinition> inLoopControls;
+
+        // Check loop1: clear file
         ControlDefinition loop1 = controls.get(0);
         assertTrue(loop1.getType()==ControlDefinition.CONTROL_LOOP_FILE);
-        assertTrue(loop1.getParameter().compareTo("PFB")==0);
+        assertTrue(loop1.getParameter().compareTo("PFA")==0);
+        // Check delete control
+        inLoopControls = loop1.getEmbeds();
+        assertTrue(inLoopControls.size()==1);
+        ControlDefinition delete = inLoopControls.get(0);
+        assertTrue(delete.getType()==ControlDefinition.CONTROL_DELETE);
+        assertTrue(delete.getParameter().compareTo("PFA")==0);
+
+        // Check loop2: assign pfb
         ControlDefinition loop2 = controls.get(1);
         assertTrue(loop2.getType()==ControlDefinition.CONTROL_LOOP_FILE);
-        assertTrue(loop2.getParameter().compareTo("PFC")==0);
-
+        assertTrue(loop2.getParameter().compareTo("PFB")==0);
         // Check eval & write controls in loop1
-        List<ControlDefinition> inLoopControls = loop1.getEmbeds();
+        inLoopControls = loop2.getEmbeds();
         assertTrue(inLoopControls.size()==2);
         ControlDefinition evalControl = inLoopControls.get(0);
         assertTrue(evalControl.getType()==ControlDefinition.CONTROL_EVAL);
@@ -120,8 +144,12 @@ public class MRPGcTest extends TestCase{
         assertTrue(writeControl.getType()==ControlDefinition.CONTROL_WRITE);
         assertTrue(writeControl.getParameter().compareTo("PFA")==0);
 
+        // Check loop3: assign pfb
+        ControlDefinition loop3 = controls.get(2);
+        assertTrue(loop3.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop3.getParameter().compareTo("PFC")==0);
         // Check eval & write controls in loop2
-        inLoopControls = loop2.getEmbeds();
+        inLoopControls = loop3.getEmbeds();
         assertTrue(inLoopControls.size()==2);
         evalControl = inLoopControls.get(0);
         assertTrue(evalControl.getType()==ControlDefinition.CONTROL_EVAL);
@@ -213,24 +241,26 @@ public class MRPGcTest extends TestCase{
 
         // Check loop control definitions
         List<ControlDefinition> controls = rpg.getControlDefinitions();
-        assertTrue(controls.size()==1);
+        assertTrue(controls.size()==2);
+        List<ControlDefinition> inLoopControls;
+
+        // Check loop1: clear file
         ControlDefinition loop1 = controls.get(0);
         assertTrue(loop1.getType()==ControlDefinition.CONTROL_LOOP_FILE);
-        assertTrue(loop1.getParameter().compareTo("PFB")==0);
-
-        // Check delete in loop1
-        // TODO
-        /*
-        List<ControlDefinition> inLoopControls;
+        assertTrue(loop1.getParameter().compareTo("PFA")==0);
+        // Check delete control
         inLoopControls = loop1.getEmbeds();
         assertTrue(inLoopControls.size()==1);
         ControlDefinition delete = inLoopControls.get(0);
         assertTrue(delete.getType()==ControlDefinition.CONTROL_DELETE);
         assertTrue(delete.getParameter().compareTo("PFA")==0);
-        */
 
+        // Check loop2: assign file
+        ControlDefinition loop2 = controls.get(1);
+        assertTrue(loop2.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop2.getParameter().compareTo("PFB")==0);
         // Check eval & write controls in loop2
-        List<ControlDefinition> inLoopControls = loop1.getEmbeds();
+        inLoopControls = loop2.getEmbeds();
         assertTrue(inLoopControls.size()==3);
         ControlDefinition eval1 = inLoopControls.get(0);
         assertTrue(eval1.getType()==ControlDefinition.CONTROL_EVAL);
@@ -251,8 +281,6 @@ public class MRPGcTest extends TestCase{
         String input = "PFA=PFA*(PFA001=P)";
         MRPG mrpg = new MRPG(input);
         RPG rpg = MRPGc.compile(mrpg);
-
-        echo(rpg.toString());
 
         // Check file definitions
         List<FileDefinition> files = rpg.getFileDefinitions();

@@ -31,12 +31,9 @@ public class MRPGc {
         rpg.addFile(fdAssignor);
 
         // Check if pf should be clear
-        // TODO
-        /*
         if (shouldFileBeClear(mrpg, assignee)){
             addClearLoop(rpg, assignee);
         }
-        */
 
         // Inject Controls
         if (mrpg.getOperation()== null){
@@ -86,6 +83,27 @@ public class MRPGc {
         }
 
         return rpg;
+    }
+
+    private static boolean shouldFileBeClear(MRPG mrpg, String file){
+        String assignee = mrpg.getAssignee();
+        String assignor = mrpg.getAssignor();
+        return file.compareTo(assignee) == 0 && file.compareTo(assignor) != 0;
+    }
+
+    private static void addClearLoop(RPG rpg, String file){
+        
+        ControlDefinition loop = new ControlDefinition();
+        loop.setType(ControlDefinition.CONTROL_LOOP_FILE);
+        loop.setParameter(file);
+
+        ControlDefinition delete = new ControlDefinition();
+        delete.setType(ControlDefinition.CONTROL_DELETE);
+        delete.setParameter(file);
+        loop.addEmbed(delete);
+
+        rpg.addControl(loop);
+
     }
 
     private static void addLoop(RPG rpg, String assignee, String assignor, String eval){
