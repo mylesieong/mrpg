@@ -316,6 +316,26 @@ public class MRPGcTest extends TestCase{
 
     }
 
+    /** 
+     * Case 6:PFA = PFA * ( PFA001 = P1 ) * ( PFA002 = P2 )
+     * PFA=PFA*(PFA001=P1)
+     * PFA=PFA*(PFA002=P2)
+     */
+    public void testCase6() throws Exception{
+        String input = "PFA=PFA*(PFA001=P)*(PFA002=P2)";
+        MRPG mrpg = new MRPG(input);
+        assertTrue(true);       
+    }
+
+    /** 
+     * Case 7:PFA = PFA - PFB
+     */
+    public void testCase7() throws Exception{
+        String input = "PFA=PFA-PFB";
+        MRPG mrpg = new MRPG(input);
+        assertTrue(true);       
+    }
+
     /**
      * helper function 
      */
