@@ -7,14 +7,14 @@ import junit.framework.TestSuite;
 /**
  *
  */
-public class MRPGTest extends TestCase{
+public class MRPGStatementTest extends TestCase{
 
     /**
      * Create the test case
      *
      * @param testName name of the test case
      */
-    public MRPGTest( String testName ){
+    public MRPGStatementTest( String testName ){
         super( testName );
     }
 
@@ -22,18 +22,18 @@ public class MRPGTest extends TestCase{
      * @return the suite of tests being tested
      */
     public static Test suite(){
-        return new TestSuite( MRPGTest.class );
+        return new TestSuite( MRPGStatementTest.class );
     }
 
     /**
      * Test toString of PFA=PFB
      */
     public void testAssignOneToOneWSetter()throws Exception{
-        MRPG mrpg = new MRPG();
-        mrpg.setAssignee("PFA");
-        mrpg.setAssignor("PFB");
+        MRPGStatement m = new MRPGStatement();
+        m.setAssignee("PFA");
+        m.setAssignor("PFB");
         String expectOutput = "PFA=PFB"; 
-        String output = mrpg.toString();
+        String output = m.toString();
         assertTrue(expectOutput.compareTo(output) == 0);
     }
 
@@ -41,16 +41,16 @@ public class MRPGTest extends TestCase{
      * Test toString of PFA=PFB
      */
     public void testAssignOneToOneWConstructor()throws Exception{
-        MRPG mrpg = new MRPG("PFA=PFB");
+        MRPGStatement m = new MRPGStatement("PFA=PFB");
 
         String expect1 = "PFA=PFB"; 
-        String output1 = mrpg.toString();
+        String output1 = m.toString();
 
         String expect2 = "PFB";
-        String output2 = mrpg.getAssignor();
+        String output2 = m.getAssignor();
 
         String expect3 = "PFA";
-        String output3 = mrpg.getAssignee();
+        String output3 = m.getAssignee();
 
         assertTrue(expect1.compareTo(output1)==0
                 && expect2.compareTo(output2)==0
@@ -61,22 +61,22 @@ public class MRPGTest extends TestCase{
      * Test toString of PFA=PFB+PFC
      */
     public void testAssignOneToTwoWConstructor()throws Exception{
-        MRPG mrpg = new MRPG("PFA=PFB+PFC");
+        MRPGStatement m = new MRPGStatement("PFA=PFB+PFC");
 
         String expect1 = "PFA=PFB+PFC"; 
-        String output1 = mrpg.toString();
+        String output1 = m.toString();
 
         String expect2 = "PFA";
-        String output2 = mrpg.getAssignee();
+        String output2 = m.getAssignee();
 
         String expect3 = "PFB";
-        String output3 = mrpg.getAssignor();
+        String output3 = m.getAssignor();
 
         String expect4 = "+";
-        String output4 = mrpg.getOperation().getOperator();
+        String output4 = m.getOperation().getOperator();
 
         String expect5 = "PFC";
-        String output5 = mrpg.getOperation().getParameter();
+        String output5 = m.getOperation().getParameter();
 
         assertTrue(expect1.compareTo(output1)==0
                 && expect2.compareTo(output2)==0
@@ -89,22 +89,22 @@ public class MRPGTest extends TestCase{
      * Test toString of PFA=PFA*PFB
      */
     public void testAssignOneToTwoIncludeSelfWConstructor()throws Exception{
-        MRPG mrpg = new MRPG("PFA=PFA*PFB");
+        MRPGStatement m = new MRPGStatement("PFA=PFA*PFB");
 
         String expect1 = "PFA=PFA*PFB"; 
-        String output1 = mrpg.toString();
+        String output1 = m.toString();
 
         String expect2 = "PFA";
-        String output2 = mrpg.getAssignee();
+        String output2 = m.getAssignee();
 
         String expect3 = "PFA";
-        String output3 = mrpg.getAssignor();
+        String output3 = m.getAssignor();
 
         String expect4 = "*";
-        String output4 = mrpg.getOperation().getOperator();
+        String output4 = m.getOperation().getOperator();
 
         String expect5 = "PFB";
-        String output5 = mrpg.getOperation().getParameter();
+        String output5 = m.getOperation().getParameter();
 
         assertTrue(expect1.compareTo(output1)==0
                 && expect2.compareTo(output2)==0
