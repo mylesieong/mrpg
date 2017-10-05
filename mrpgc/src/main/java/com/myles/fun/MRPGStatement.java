@@ -101,6 +101,21 @@ public class MRPGStatement {
         return _operation;
     }
 
+    public boolean isAtomic(){
+
+        if (_operation == null){
+            return true;
+        }
+
+        String p = _operation.getParameter();
+        int iADD = p.indexOf(OPERATOR_ADD);
+        int iRED = p.indexOf(OPERATOR_RED);
+        int iMUL = p.indexOf(OPERATOR_MUL);
+        int iDIV = p.indexOf(OPERATOR_DIV);
+        return iADD==-1 && iRED==-1 && iMUL==-1 && iDIV==-1;
+        
+    }
+
     @Override 
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -117,7 +132,7 @@ public class MRPGStatement {
     /**
      *
      */
-    public class Operation {
+    public static class Operation {
         
         private String _operator;
         private String _parameter;

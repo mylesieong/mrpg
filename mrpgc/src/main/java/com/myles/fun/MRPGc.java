@@ -20,66 +20,68 @@ public class MRPGc {
     public static RPG compile(MRPG mrpg){
         RPG rpg = new RPG();
 
-        MRPGStatement ms = mrpg.getStatement(0);
+        List<MRPGStatement> ms = mrpg.getAllStatement();
 
-        // Inject assignee
-        String assignee = ms.getAssignee();
-        FileDefinition fdAssignee = new FileDefinition(assignee, FileDefinition.FILE_UPDATE_N_ADD);
-        rpg.addFile(fdAssignee);
+        for (MRPGStatement m : ms){
+            // Inject assignee
+            String assignee = m.getAssignee();
+            FileDefinition fdAssignee = new FileDefinition(assignee, FileDefinition.FILE_UPDATE_N_ADD);
+            rpg.addFile(fdAssignee);
 
-        // Inject assignor
-        String assignor = ms.getAssignor();
-        FileDefinition fdAssignor = new FileDefinition(assignor, FileDefinition.FILE_INQUIRY);
-        rpg.addFile(fdAssignor);
+            // Inject assignor
+            String assignor = m.getAssignor();
+            FileDefinition fdAssignor = new FileDefinition(assignor, FileDefinition.FILE_INQUIRY);
+            rpg.addFile(fdAssignor);
 
-        // Check if pf should be clear
-        if (shouldFileBeClear(ms, assignee)){
-            addClearLoop(rpg, assignee);
-        }
-
-        // Inject Controls
-        if (ms.getOperation()== null){
-
-            // This must be a single file assignment
-            String eval = ms.getEvalStatement(assignee, assignor);
-            addLoop(rpg, assignee, assignor, eval);
-
-        }else{
-
-            String operator = ms.getOperation().getOperator();
-
-            // Process + Operation
-            if (operator.compareTo(MRPGStatement.OPERATOR_ADD) == 0){
-                String secondAssignor = ms.getOperation().getParameter();
-                // Parse addition operation file definition
-                FileDefinition secondAssignorFD =
-                    new FileDefinition(secondAssignor, FileDefinition.FILE_INQUIRY);
-                rpg.addFile(secondAssignorFD);
-                
-                // Parse addition operation control definition
-                String eval1 = ms.getEvalStatement(assignee, assignor);
-                String eval2 = ms.getEvalStatement(assignee, secondAssignor);
-                addLoop(rpg, assignee, assignor, eval1);
-                addLoop(rpg, assignee, secondAssignor, eval2);
+            // Check if pf should be clear
+            if (shouldFileBeClear(m, assignee)){
+                addClearLoop(rpg, assignee);
             }
 
-            // Process * Operation
-            if (operator.compareTo(MRPGStatement.OPERATOR_MUL) == 0){
+            // Inject Controls
+            if (m.getOperation()== null){
 
-                List<String> ops = new ArrayList<String>();
+                // This must be a single file assignment
+                String eval = m.getEvalStatement(assignee, assignor);
+                addLoop(rpg, assignee, assignor, eval);
 
-                // Set lambda stmt
-                String lambda = ms.getOperation().getParameter(); 
-                int bracketOpen = lambda.indexOf("(");
-                int bracketClose = lambda.indexOf(")");
-                lambda = lambda.substring(bracketOpen + 1, bracketClose);
-                ops.add(lambda);
+            }else{
 
-                // Set update/write stmt
-                String eval = ms.getEvalStatement(assignee, assignor);
-                ops.add(eval);
+                String operator = m.getOperation().getOperator();
 
-                addLoop(rpg, assignee, assignor, ops); 
+                // Process + Operation
+                if (operator.compareTo(MRPGStatement.OPERATOR_ADD) == 0){
+                    String secondAssignor = m.getOperation().getParameter();
+                    // Parse addition operation file definition
+                    FileDefinition secondAssignorFD = new FileDefinition(secondAssignor, FileDefinition.FILE_INQUIRY);
+                    rpg.addFile(secondAssignorFD);
+                
+                    // Parse addition operation control definition
+                    String eval1 = m.getEvalStatement(assignee, assignor);
+                    String eval2 = m.getEvalStatement(assignee, secondAssignor);
+                    addLoop(rpg, assignee, assignor, eval1);
+                    addLoop(rpg, assignee, secondAssignor, eval2);
+                }
+
+                // Process * Operation
+                if (operator.compareTo(MRPGStatement.OPERATOR_MUL) == 0){
+
+                    List<String> ops = new ArrayList<String>();
+
+                    // Set lambda stmt
+                    String lambda = m.getOperation().getParameter(); 
+                    int bracketOpen = lambda.indexOf("(");
+                    int bracketClose = lambda.indexOf(")");
+                    lambda = lambda.substring(bracketOpen + 1, bracketClose);
+                    ops.add(lambda);
+
+                    // Set update/write stmt
+                    String eval = m.getEvalStatement(assignee, assignor);
+                    ops.add(eval);
+
+                    addLoop(rpg, assignee, assignor, ops); 
+                }
+
             }
 
         }
