@@ -45,20 +45,27 @@ public class MRPGStatement {
 
         }else{
 
-            int index = 0;
+            int index = 9999;
             String operator = null;
             String parameter = null;
 
-            if (iADD != -1){
+            // Locate the first operator
+            if (iADD > 0 && iADD < index){
                 index = iADD;
                 operator = OPERATOR_ADD;
-            }else if (iRED != -1){
+            }
+
+            if (iRED > 0 && iRED < index){
                 index = iRED;
                 operator = OPERATOR_RED;
-            }else if (iMUL != -1){
+            }
+           
+            if (iMUL > 0 && iMUL < index){
                 index = iMUL;
                 operator = OPERATOR_MUL;
-            }else if (iDIV != -1){
+            }
+            
+            if (iDIV > 0 && iDIV < index){
                 index = iDIV;
                 operator = OPERATOR_DIV;
             }
@@ -164,4 +171,13 @@ public class MRPGStatement {
         }
     }
 
+    private void echo(String s){
+        System.out.println("***debug MRPGStatement ***");
+        System.out.println(s);
+    }
+
+    private void echo(int i){
+        System.out.println("***debug MRPGStatement ***");
+        System.out.println(i);
+    }
 }

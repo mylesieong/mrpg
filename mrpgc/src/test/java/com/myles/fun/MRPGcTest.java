@@ -388,8 +388,6 @@ public class MRPGcTest extends TestCase{
         mrpg.atomize(); // simplify its statements into atoms
         RPG rpg = MRPGc.compile(mrpg);
        
-        echo(rpg.toString());
-
         // Check file definitions
         List<FileDefinition> files = rpg.getFileDefinitions();
         assertTrue(files.size()==1);
@@ -444,19 +442,169 @@ public class MRPGcTest extends TestCase{
     }
 
     /** 
-     * Case 7:PFA = PFA - PFB
+     * Case 7:PFA = PFA + PFB * (PFA001 = P)
+     * This is equivalent to:
+     * 1) PFA=PFA+PFB
+     * 2) PFA=PFA*(PFA001=P)
      */
     public void testCase7() throws Exception{
-        String input = "PFA=PFA-PFB";
+        String input = "PFA=PFA+PFB*(PFA001=P)";
         MRPG mrpg = new MRPG(input);
-        assertTrue(true);       
+        mrpg.atomize(); // simplify its statements into atoms
+        RPG rpg = MRPGc.compile(mrpg);
+
+        // Check file definitions
+        List<FileDefinition> files = rpg.getFileDefinitions();
+        assertTrue(files.size()==2);
+        for (FileDefinition fd: files){
+            String filename = fd.getFile();
+            assertTrue(filename.compareTo("PFA") == 0
+                    || filename.compareTo("PFB") == 0
+                    );
+            if (filename.compareTo("PFA") == 0){
+                assertTrue(fd.getType() == FileDefinition.FILE_UPDATE_N_ADD);
+            }
+            if (filename.compareTo("PFB") == 0){
+                assertTrue(fd.getType() == FileDefinition.FILE_INQUIRY);
+            }
+        }
+
+        // Check loop control definitions
+        List<ControlDefinition> controls = rpg.getControlDefinitions();
+        List<ControlDefinition> inLoopControls;
+        assertTrue(controls.size()==3);
+
+        // Check loop1
+        ControlDefinition loop1 = controls.get(0);
+        assertTrue(loop1.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop1.getParameter().compareTo("PFA")==0);
+        // Check eval & write controls in loop1
+        inLoopControls = loop1.getEmbeds();
+        assertTrue(inLoopControls.size()==2);
+        ControlDefinition eval = inLoopControls.get(0);
+        assertTrue(eval.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval.getParameter().compareTo("PFA001=PFA001")==0);
+        ControlDefinition update = inLoopControls.get(1);
+        assertTrue(update.getType()==ControlDefinition.CONTROL_UPDATE);
+        assertTrue(update.getParameter().compareTo("PFA")==0);
+
+        // Check loop1
+        ControlDefinition loop2 = controls.get(1);
+        assertTrue(loop2.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop2.getParameter().compareTo("PFB")==0);
+        // Check loop1: eval & write controls
+        inLoopControls = loop2.getEmbeds();
+        assertTrue(inLoopControls.size()==2);
+        ControlDefinition eval1A = inLoopControls.get(0);
+        assertTrue(eval1A.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval1A.getParameter().compareTo("PFA001=PFB001")==0);
+        ControlDefinition write1 = inLoopControls.get(1);
+        assertTrue(write1.getType()==ControlDefinition.CONTROL_WRITE);
+        assertTrue(write1.getParameter().compareTo("PFA")==0);
+
+        // Check loop3
+        ControlDefinition loop3 = controls.get(2);
+        assertTrue(loop3.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop3.getParameter().compareTo("PFA")==0);
+        // Check loop3: eval & write controls
+        inLoopControls = loop3.getEmbeds();
+        assertTrue(inLoopControls.size()==3);
+        ControlDefinition eval2A = inLoopControls.get(0);
+        assertTrue(eval2A.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval2A.getParameter().compareTo("PFA001=P")==0);
+        ControlDefinition eval2B = inLoopControls.get(1);
+        assertTrue(eval2B.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval2B.getParameter().compareTo("PFA001=PFA001")==0);
+        ControlDefinition write2 = inLoopControls.get(2);
+        assertTrue(write2.getType()==ControlDefinition.CONTROL_UPDATE);
+        assertTrue(write2.getParameter().compareTo("PFA")==0);
+
     }
 
+    /** 
+     * Case 8:PFA = PFA * (PFA001 = P) + PFB 
+     * This is equivalent to:
+     * 1) PFA=PFA*(PFA001=P)
+     * 2) PFA=PFA+PFB
+     */
+    public void testCase8() throws Exception{
+        String input = "PFA=PFA*(PFA001=P)+PFB";
+        MRPG mrpg = new MRPG(input);
+        mrpg.atomize(); // simplify its statements into atoms
+        RPG rpg = MRPGc.compile(mrpg);
+
+        // Check file definitions
+        List<FileDefinition> files = rpg.getFileDefinitions();
+        assertTrue(files.size()==2);
+        for (FileDefinition fd: files){
+            String filename = fd.getFile();
+            assertTrue(filename.compareTo("PFA") == 0
+                    || filename.compareTo("PFB") == 0
+                    );
+            if (filename.compareTo("PFA") == 0){
+                assertTrue(fd.getType() == FileDefinition.FILE_UPDATE_N_ADD);
+            }
+            if (filename.compareTo("PFB") == 0){
+                assertTrue(fd.getType() == FileDefinition.FILE_INQUIRY);
+            }
+        }
+
+        // Check loop control definitions
+        List<ControlDefinition> controls = rpg.getControlDefinitions();
+        List<ControlDefinition> inLoopControls;
+        assertTrue(controls.size()==3);
+
+        // Check loop1
+        ControlDefinition loop1 = controls.get(0);
+        assertTrue(loop1.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop1.getParameter().compareTo("PFA")==0);
+        // Check loop1: eval & write controls
+        inLoopControls = loop1.getEmbeds();
+        assertTrue(inLoopControls.size()==3);
+        ControlDefinition eval2A = inLoopControls.get(0);
+        assertTrue(eval2A.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval2A.getParameter().compareTo("PFA001=P")==0);
+        ControlDefinition eval2B = inLoopControls.get(1);
+        assertTrue(eval2B.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval2B.getParameter().compareTo("PFA001=PFA001")==0);
+        ControlDefinition write2 = inLoopControls.get(2);
+        assertTrue(write2.getType()==ControlDefinition.CONTROL_UPDATE);
+        assertTrue(write2.getParameter().compareTo("PFA")==0);
+
+        // Check loop2
+        ControlDefinition loop2 = controls.get(1);
+        assertTrue(loop2.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop2.getParameter().compareTo("PFA")==0);
+        // Check eval & write controls in loop1
+        inLoopControls = loop2.getEmbeds();
+        assertTrue(inLoopControls.size()==2);
+        ControlDefinition eval = inLoopControls.get(0);
+        assertTrue(eval.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval.getParameter().compareTo("PFA001=PFA001")==0);
+        ControlDefinition update = inLoopControls.get(1);
+        assertTrue(update.getType()==ControlDefinition.CONTROL_UPDATE);
+        assertTrue(update.getParameter().compareTo("PFA")==0);
+
+        // Check loop3
+        ControlDefinition loop3 = controls.get(2);
+        assertTrue(loop3.getType()==ControlDefinition.CONTROL_LOOP_FILE);
+        assertTrue(loop3.getParameter().compareTo("PFB")==0);
+        // Check loop1: eval & write controls
+        inLoopControls = loop3.getEmbeds();
+        assertTrue(inLoopControls.size()==2);
+        ControlDefinition eval1A = inLoopControls.get(0);
+        assertTrue(eval1A.getType()==ControlDefinition.CONTROL_EVAL);
+        assertTrue(eval1A.getParameter().compareTo("PFA001=PFB001")==0);
+        ControlDefinition write1 = inLoopControls.get(1);
+        assertTrue(write1.getType()==ControlDefinition.CONTROL_WRITE);
+        assertTrue(write1.getParameter().compareTo("PFA")==0);
+
+    }
     /**
      * helper function 
      */
     private void echo(String s){
-        System.out.println("***debug***" + s);
+        System.out.println("***debug***\n" + s);
     }
 
 }

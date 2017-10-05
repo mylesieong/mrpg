@@ -66,13 +66,28 @@ public class MRPG {
                 String pa = m.getOperation().getParameter();
 
                 int iMul = pa.indexOf(MRPGStatement.OPERATOR_MUL);
-                String pa1 = pa.substring(0, iMul);
-                String pa2 = pa.substring(iMul + 1, pa.length());
+                int iAdd = pa.indexOf(MRPGStatement.OPERATOR_ADD);
+                int index;
+                String pa1;
+                String pa2;
+                String op1;
+                String op2;
+                if (iMul > 0 && iAdd > 0){
+                    index = iMul > iAdd ? iAdd: iMul;
+                    op2 = iMul > iAdd ? MRPGStatement.OPERATOR_ADD: MRPGStatement.OPERATOR_MUL;
+                }else{
+                    index = iMul > 0 ? iMul: iAdd;
+                    op2 = iMul > 0 ? MRPGStatement.OPERATOR_MUL: MRPGStatement.OPERATOR_ADD;
+                }
 
-                o1.setOperator(op);
+                pa1 = pa.substring(0, index);
+                pa2 = pa.substring(index + 1, pa.length());
+                op1 = op;
+
+                o1.setOperator(op1);
                 o1.setParameter(pa1);
 
-                o2.setOperator(op);
+                o2.setOperator(op2);
                 o2.setParameter(pa2);
 
                 m1.setAssignee(m.getAssignee());
@@ -101,4 +116,12 @@ public class MRPG {
         System.out.println(s);
     }
 
+    @Override 
+    public String toString(){
+        String result = "";
+        for (MRPGStatement m: _stmts){
+            result = result + m.toString() + "\n";
+        }
+        return result;
+    }
 }
